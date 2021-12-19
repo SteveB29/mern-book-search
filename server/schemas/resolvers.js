@@ -43,26 +43,30 @@ const resolvers = {
       return { token, user };
     },
     saveBook: async (parent, args, context) => {
-      // will need to refactor this to work only while logged in and using args/context
-      const userId = '61bf9b2e02dffb3e6460e3dd';
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: userId },
-        { $addToSet: { savedBooks: args.input } },
-        { new: true, runValidators: true }
-      )
+      if (context.user) {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $addToSet: { savedBooks: args.input } },
+          { new: true, runValidators: true }
+        );
 
-      return updatedUser;
+        return updatedUser;
+      }
+
+      throw new AuthenticationError('You need to be logged in!');
     },
     removeBook: async (parent, args, context) => {
-      // will need to refactor this to work only while logged in and using args/context
-      const userId = '61bf9b2e02dffb3e6460e3dd';
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: userId },
-        { $pull: { savedBooks: args } },
-        { new: true }
-      )
+      if (context.user) {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $pull: { savedBooks: args } },
+          { new: true }
+       );
 
-      return updatedUser;
+        return updatedUser;
+      }
+
+      throw new AuthenticationError('You need to be logged in!');
     }
   }
 };
