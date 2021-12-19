@@ -42,12 +42,28 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
-    // saveBook: async (parent, args) => {
-      
-    // },
-    // removeBook: async (parent, args) => {
-      
-    // }
+    saveBook: async (parent, args, context) => {
+      // will need to refactor this to work only while logged in and using args/context
+      const userId = '61bf9b2e02dffb3e6460e3dd';
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { $addToSet: { savedBooks: args.input } },
+        { new: true, runValidators: true }
+      )
+
+      return updatedUser;
+    },
+    removeBook: async (parent, args, context) => {
+      // will need to refactor this to work only while logged in and using args/context
+      const userId = '61bf9b2e02dffb3e6460e3dd';
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { $pull: { savedBooks: args } },
+        { new: true }
+      )
+
+      return updatedUser;
+    }
   }
 };
 
