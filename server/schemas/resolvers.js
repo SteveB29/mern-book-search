@@ -6,14 +6,12 @@ const resolvers = {
   Query: {
     me: async (parent, args, context) => {
       if (context.user) {
-        const foundUser = await User.findOne({
-          $or: [{ _id: user ? user._id : params.id }, { username: params.username }],
-        });
+        const foundUser = await User.findOne({ _id: context.user._id });
 
         return foundUser;
       }
 
-      // throw new AuthenticationError('Not logged in');
+      throw new AuthenticationError('Not logged in');
     },
     users: async () => {
       return User.find();
