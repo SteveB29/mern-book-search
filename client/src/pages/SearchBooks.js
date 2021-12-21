@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
 
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
+import { GET_ME } from '../utils/queries';
 
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
@@ -15,6 +16,8 @@ const SearchBooks = () => {
   const [searchInput, setSearchInput] = useState('');
   // calls mutation to use when needed
   const [saveBook] = useMutation(SAVE_BOOK);
+
+  const { data } = useQuery(GET_ME);
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
@@ -71,7 +74,11 @@ const SearchBooks = () => {
 
     try {
       const { data } = await saveBook({
-        variables: { input: bookToSave }
+        variables: { input: bookToSave },
+        // refetch the GET_ME query as will not update otherwise if SavedBooks has been visited already
+        refetchQueries: () => [{
+          query: GET_ME
+        }]
       });
       
       // if book successfully saves to user's account, save book id to state
