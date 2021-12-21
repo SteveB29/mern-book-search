@@ -16,7 +16,7 @@ const SearchBooks = () => {
   const [searchInput, setSearchInput] = useState('');
   // calls mutation to use when needed
   const [saveBook] = useMutation(SAVE_BOOK);
-
+  // call GET_ME to refetch to update cache with new saved book
   const { data } = useQuery(GET_ME);
 
   // create state to hold saved bookId values
@@ -65,17 +65,11 @@ const SearchBooks = () => {
     // find the book in `searchedBooks` state by the matching id
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
 
-    // get token
-    // const token = Auth.loggedIn() ? Auth.getToken() : null;
-
-    // if (!token) {
-    //   return false;
-    // }
-
     try {
+      // use the SAVE_BOOK mutation to add new book to savedBooks array
       const { data } = await saveBook({
         variables: { input: bookToSave },
-        // refetch the GET_ME query as will not update otherwise if SavedBooks has been visited already
+        // refetch the GET_ME query to update cache for SavedBooks page
         refetchQueries: () => [{
           query: GET_ME
         }]
